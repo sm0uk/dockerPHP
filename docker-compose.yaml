@@ -8,6 +8,9 @@ services:
       - "8080:8080"
     volumes:
       - ./:/app
+      - ./.docker/php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+    networks:
+      - local_php_project
     working_dir: /app
     command: "php -S 0.0.0.0:8080"
 
@@ -16,9 +19,22 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./mysql:/var/lib/mysql
+      - mysqldata:/var/lib/mysql
+    networks:
+      - local_php_project
     environment:
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: db_name
       MYSQL_USER: app
       MYSQL_PASSWORD: app_password
+
+volumes:
+  mysqldata:
+
+networks:
+  local_php_project:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.220.0/28
